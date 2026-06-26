@@ -1,0 +1,18 @@
+DST-ABIGAIL-ENHANCED
+
+Enhances Wendy's Abigail with combat, utility, and survivability upgrades.
+
+Current features:
+- Abigail calls down lightning on her current attack target immediately.
+- While that target stays alive and remains engaged, lightning strikes again every 2 seconds.
+- Whenever Abigail hits a target, she refreshes a 60 second movement slow that reduces that target's speed by 50%.
+- Abigail permanently gains 50% movement speed.
+- Abigail's light radius is increased to 4x the vanilla radius.
+- Every Abigail restores 1 hunger, 1 sanity, and 1 health to nearby players every 10 seconds.
+- Abigail is permanently immune to lightning and fire damage.
+
+Notes:
+- The nearby-player restoration is applied per Abigail, so multiple Abigails can restore players faster when grouped together.
+- There are no external configuration options in this version.
+
+Version: 0.1.3

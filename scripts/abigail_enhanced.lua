@@ -3,15 +3,21 @@ local SpawnPrefab = _G.SpawnPrefab
 local Vector3 = _G.Vector3
 local IsEntityElectricImmune = _G.IsEntityElectricImmune
 local LightningStrikeAttack = _G.LightningStrikeAttack
+local TheSim = _G.TheSim
 
 local SHOCK_INTERVAL = 2
-local LIGHT_RADIUS_MULT = 1.5
+local LIGHT_RADIUS_MULT = 4
 local LIGHT_REFRESH_INTERVAL = 1
 local ABIGAIL_SPEED_MULT = 1.5
 local TARGET_SLOW_MULT = 0.5
 local TARGET_SLOW_DURATION = 60
+local PLAYER_REGEN_INTERVAL = 10
+local PLAYER_REGEN_RADIUS = 6
+local PLAYER_REGEN_AMOUNT = 1
 local ABIGAIL_SPEED_KEY = "dst_abigail_enhanced_speed"
 local TARGET_SLOW_KEY = "dst_abigail_enhanced_slow"
+local PLAYER_REGEN_MUST_TAGS = { "player" }
+local PLAYER_REGEN_CANT_TAGS = { "INLIMBO", "playerghost" }
 
 local function StopTargetLightning(inst)
     if inst._dae_lightning_task ~= nil then
@@ -185,6 +191,40 @@ local function RefreshAbigailLight(inst)
     end
 end
 
+local function RestoreNearbyPlayers(inst)
+    if not inst:IsValid()
+        or inst:IsInLimbo()
+        or inst.components.health == nil
+        or inst.components.health:IsDead()
+    then
+        return
+    end
+
+    local x, y, z = inst.Transform:GetWorldPosition()
+    local players = TheSim:FindEntities(
+        x,
+        y,
+        z,
+        PLAYER_REGEN_RADIUS,
+        PLAYER_REGEN_MUST_TAGS,
+        PLAYER_REGEN_CANT_TAGS
+    )
+
+    for _, player in ipairs(players) do
+        if player.components.health ~= nil and not player.components.health:IsDead() then
+            player.components.health:DoDelta(PLAYER_REGEN_AMOUNT, false, "abigail_enhanced")
+        end
+
+        if player.components.hunger ~= nil then
+            player.components.hunger:DoDelta(PLAYER_REGEN_AMOUNT)
+        end
+
+        if player.components.sanity ~= nil then
+            player.components.sanity:DoDelta(PLAYER_REGEN_AMOUNT)
+        end
+    end
+end
+
 AddPrefabPostInit("abigail", function(inst)
     if not _G.TheWorld.ismastersim then
         return
@@ -194,6 +234,7 @@ AddPrefabPostInit("abigail", function(inst)
     ApplyAbigailSpeedBoost(inst)
     RefreshAbigailLight(inst)
     inst._dae_light_refresh_task = inst:DoPeriodicTask(LIGHT_REFRESH_INTERVAL, RefreshAbigailLight)
+    inst._dae_player_regen_task = inst:DoPeriodicTask(PLAYER_REGEN_INTERVAL, RestoreNearbyPlayers, PLAYER_REGEN_INTERVAL)
 
     inst._dae_on_target_death = function(target)
         if inst._dae_lightning_target == target then
