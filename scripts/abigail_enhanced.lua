@@ -6,6 +6,7 @@ local LightningStrikeAttack = _G.LightningStrikeAttack
 
 local SHOCK_INTERVAL = 2
 local LIGHT_RADIUS_MULT = 1.5
+local LIGHT_REFRESH_INTERVAL = 1
 local ABIGAIL_SPEED_MULT = 1.5
 local TARGET_SLOW_MULT = 0.5
 local TARGET_SLOW_DURATION = 60
@@ -168,23 +169,19 @@ local function ApplyAbigailSpeedBoost(inst)
     end
 end
 
-local function ApplyAbigailLightBoost(inst)
-    if inst.Light == nil or inst._dae_light_radius_wrapped then
+local function RefreshAbigailLight(inst)
+    if inst.Light == nil then
         return
     end
 
-    local original_set_radius = inst.Light.SetRadius
-    inst.Light.SetRadius = function(light, radius, ...)
-        return original_set_radius(light, radius * LIGHT_RADIUS_MULT, ...)
+    local level = 1
+    if inst._playerlink ~= nil and inst._playerlink.components.ghostlybond ~= nil then
+        level = inst._playerlink.components.ghostlybond.bondlevel
     end
-    inst._dae_light_radius_wrapped = true
 
-    local ok, current_radius = pcall(function()
-        return inst.Light:GetRadius()
-    end)
-
-    if ok and type(current_radius) == "number" then
-        original_set_radius(inst.Light, current_radius * LIGHT_RADIUS_MULT)
+    local light_vals = _G.TUNING.ABIGAIL_LIGHTING[level] or _G.TUNING.ABIGAIL_LIGHTING[1]
+    if light_vals ~= nil and light_vals.r ~= nil then
+        inst.Light:SetRadius(light_vals.r * LIGHT_RADIUS_MULT)
     end
 end
 
@@ -195,7 +192,8 @@ AddPrefabPostInit("abigail", function(inst)
 
     ApplyAbigailImmunities(inst)
     ApplyAbigailSpeedBoost(inst)
-    ApplyAbigailLightBoost(inst)
+    RefreshAbigailLight(inst)
+    inst._dae_light_refresh_task = inst:DoPeriodicTask(LIGHT_REFRESH_INTERVAL, RefreshAbigailLight)
 
     inst._dae_on_target_death = function(target)
         if inst._dae_lightning_target == target then
