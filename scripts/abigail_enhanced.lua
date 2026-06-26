@@ -5,6 +5,11 @@ local IsEntityElectricImmune = _G.IsEntityElectricImmune
 local LightningStrikeAttack = _G.LightningStrikeAttack
 
 local SHOCK_INTERVAL = 2
+local LOG_PREFIX = "[DST-ABIGAIL-ENHANCED]"
+
+local function DebugLog(message)
+    print(string.format("%s %s", LOG_PREFIX, message))
+end
 
 local function StopTargetLightning(inst)
     if inst._dae_lightning_task ~= nil then
@@ -71,6 +76,7 @@ local function ShockCurrentTarget(inst)
         return
     end
 
+    DebugLog(string.format("Striking target %s", tostring(target.prefab)))
     StrikeTargetWithLightning(target)
 end
 
@@ -128,6 +134,7 @@ AddPrefabPostInit("abigail", function(inst)
     end
 
     ApplyAbigailImmunities(inst)
+    DebugLog("Applied Abigail enhancements to a spawned Abigail")
 
     inst._dae_on_target_death = function(target)
         if inst._dae_lightning_target == target then
