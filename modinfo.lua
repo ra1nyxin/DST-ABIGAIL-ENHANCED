@@ -12,7 +12,7 @@ Current features:
 This mod is designed to grow over time with broader Abigail-focused improvements.
 ]]
 author = "ra1nyxin"
-version = "0.1.1"
+version = "0.1.2"
 
 forumthread = ""
 api_version = 10
