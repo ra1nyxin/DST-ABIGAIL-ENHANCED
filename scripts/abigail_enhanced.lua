@@ -5,11 +5,12 @@ local IsEntityElectricImmune = _G.IsEntityElectricImmune
 local LightningStrikeAttack = _G.LightningStrikeAttack
 
 local SHOCK_INTERVAL = 2
-local LOG_PREFIX = "[DST-ABIGAIL-ENHANCED]"
-
-local function DebugLog(message)
-    print(string.format("%s %s", LOG_PREFIX, message))
-end
+local LIGHT_RADIUS_MULT = 1.5
+local ABIGAIL_SPEED_MULT = 1.5
+local TARGET_SLOW_MULT = 0.5
+local TARGET_SLOW_DURATION = 60
+local ABIGAIL_SPEED_KEY = "dst_abigail_enhanced_speed"
+local TARGET_SLOW_KEY = "dst_abigail_enhanced_slow"
 
 local function StopTargetLightning(inst)
     if inst._dae_lightning_task ~= nil then
@@ -76,7 +77,6 @@ local function ShockCurrentTarget(inst)
         return
     end
 
-    DebugLog(string.format("Striking target %s", tostring(target.prefab)))
     StrikeTargetWithLightning(target)
 end
 
@@ -128,13 +128,74 @@ local function ApplyAbigailImmunities(inst)
     end
 end
 
+local function RemoveTargetSlow(target)
+    if target._dae_slow_task ~= nil then
+        target._dae_slow_task:Cancel()
+        target._dae_slow_task = nil
+    end
+
+    if target.components.locomotor ~= nil then
+        target.components.locomotor:RemoveExternalSpeedMultiplier(target, TARGET_SLOW_KEY)
+    end
+end
+
+local function ApplyTargetSlow(target)
+    if target == nil or not target:IsValid() or target.components.locomotor == nil then
+        return
+    end
+
+    if target._dae_slow_cleanup_registered ~= true then
+        target._dae_slow_cleanup_registered = true
+        target:ListenForEvent("death", RemoveTargetSlow)
+        target:ListenForEvent("onremove", RemoveTargetSlow)
+    end
+
+    RemoveTargetSlow(target)
+    target.components.locomotor:SetExternalSpeedMultiplier(target, TARGET_SLOW_KEY, TARGET_SLOW_MULT)
+    target._dae_slow_task = target:DoTaskInTime(TARGET_SLOW_DURATION, RemoveTargetSlow)
+end
+
+local function OnAbigailHitOther(inst, data)
+    local target = data ~= nil and data.target or nil
+    if target ~= nil then
+        ApplyTargetSlow(target)
+    end
+end
+
+local function ApplyAbigailSpeedBoost(inst)
+    if inst.components.locomotor ~= nil then
+        inst.components.locomotor:SetExternalSpeedMultiplier(inst, ABIGAIL_SPEED_KEY, ABIGAIL_SPEED_MULT)
+    end
+end
+
+local function ApplyAbigailLightBoost(inst)
+    if inst.Light == nil or inst._dae_light_radius_wrapped then
+        return
+    end
+
+    local original_set_radius = inst.Light.SetRadius
+    inst.Light.SetRadius = function(light, radius, ...)
+        return original_set_radius(light, radius * LIGHT_RADIUS_MULT, ...)
+    end
+    inst._dae_light_radius_wrapped = true
+
+    local ok, current_radius = pcall(function()
+        return inst.Light:GetRadius()
+    end)
+
+    if ok and type(current_radius) == "number" then
+        original_set_radius(inst.Light, current_radius * LIGHT_RADIUS_MULT)
+    end
+end
+
 AddPrefabPostInit("abigail", function(inst)
     if not _G.TheWorld.ismastersim then
         return
     end
 
     ApplyAbigailImmunities(inst)
-    DebugLog("Applied Abigail enhancements to a spawned Abigail")
+    ApplyAbigailSpeedBoost(inst)
+    ApplyAbigailLightBoost(inst)
 
     inst._dae_on_target_death = function(target)
         if inst._dae_lightning_target == target then
@@ -150,6 +211,8 @@ AddPrefabPostInit("abigail", function(inst)
 
     inst:ListenForEvent("newcombattarget", OnNewCombatTarget)
     inst:ListenForEvent("droppedtarget", OnDroppedTarget)
+    inst:ListenForEvent("onhitother", OnAbigailHitOther)
+    inst:ListenForEvent("onareaattackother", OnAbigailHitOther)
     inst:ListenForEvent("death", StopTargetLightning)
     inst:ListenForEvent("onremove", StopTargetLightning)
 end)

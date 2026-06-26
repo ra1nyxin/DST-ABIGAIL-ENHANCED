@@ -5,12 +5,14 @@ Enhances Wendy's Abigail with scalable combat and survivability upgrades.
 Current features:
 - Abigail calls down lightning on her current attack target immediately.
 - While that target stays alive and remains engaged, lightning strikes again every 2 seconds.
+- Abigail refreshes a 60 second 50% slow on targets whenever she hits them.
+- Abigail permanently moves 50% faster and has a larger light radius.
 - Abigail is permanently immune to lightning and fire damage.
 
 This mod is designed to grow over time with broader Abigail-focused improvements.
 ]]
 author = "ra1nyxin"
-version = "0.1.0"
+version = "0.1.1"
 
 forumthread = ""
 api_version = 10
