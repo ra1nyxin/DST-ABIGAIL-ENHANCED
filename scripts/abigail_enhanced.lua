@@ -6,14 +6,14 @@ local LightningStrikeAttack = _G.LightningStrikeAttack
 local TheSim = _G.TheSim
 
 local SHOCK_INTERVAL = 2
-local LIGHT_RADIUS_MULT = 4
+local LIGHT_RADIUS_MULT = 5
 local LIGHT_REFRESH_INTERVAL = 1
 local ABIGAIL_SPEED_MULT = 1.5
 local TARGET_SLOW_MULT = 0.5
 local TARGET_SLOW_DURATION = 60
-local PLAYER_REGEN_INTERVAL = 10
+local PLAYER_REGEN_INTERVAL = 60
 local PLAYER_REGEN_RADIUS = 6
-local PLAYER_REGEN_AMOUNT = 1
+local PLAYER_REGEN_AMOUNT = 9
 local ABIGAIL_SPEED_KEY = "dst_abigail_enhanced_speed"
 local TARGET_SLOW_KEY = "dst_abigail_enhanced_slow"
 local PLAYER_REGEN_MUST_TAGS = { "player" }

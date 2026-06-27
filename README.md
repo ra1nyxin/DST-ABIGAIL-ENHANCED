@@ -12,8 +12,8 @@ Enhances Wendy's Abigail in Don't Starve Together.
 - 只要该目标还活着且仍然是阿比盖尔当前目标，就会每 2 秒再次落雷一次。
 - 阿比盖尔每次命中目标都会刷新一次 60 秒的减速效果，使目标移速降低 50%。
 - 阿比盖尔永久获得 50% 移速提升。
-- 阿比盖尔的发光范围永久提升到原版的 4 倍。
-- 每个阿比盖尔都会每 10 秒为附近玩家回复 1 点饱食度、1 点理智、1 点生命值。
+- 阿比盖尔的发光范围永久提升到原版的 5 倍。
+- 每个阿比盖尔都会每 60 秒为附近玩家回复 9 点饱食度、9 点理智、9 点生命值。
 - 阿比盖尔永久免疫雷击和火焰伤害。
 - 阿比盖尔通过“作祟”命令作用于地面上的耐久类物品时，会直接回满耐久。
 
@@ -40,8 +40,8 @@ Current features:
 - If that same target stays alive and remains Abigail's active target, it is struck again every 2 seconds.
 - Whenever Abigail hits a target, she refreshes a 60 second movement slow that reduces that target's speed by 50%.
 - Abigail permanently gains 50% movement speed.
-- Abigail's light radius is permanently increased to 4x the vanilla radius.
-- Every Abigail restores 1 hunger, 1 sanity, and 1 health to nearby players every 10 seconds.
+- Abigail's light radius is permanently increased to 5x the vanilla radius.
+- Every Abigail restores 9 hunger, 9 sanity, and 9 health to nearby players every 60 seconds.
 - Abigail is permanently immune to lightning and fire damage.
 - When Abigail uses her haunt command on a dropped durability-based item, that item's durability is fully restored.
 
