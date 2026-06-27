@@ -1,6 +1,6 @@
 name = "DST-ABIGAIL-ENHANCED"
 description = [[
-Enhances Wendy's Abigail with scalable combat and survivability upgrades.
+Enhances Wendy's Abigail with scalable combat, utility, and survivability upgrades.
 
 Current features:
 - Abigail calls down lightning on her current attack target immediately.
@@ -9,11 +9,12 @@ Current features:
 - Abigail permanently moves 50% faster and has a 4x light radius.
 - Abigail restores 1 hunger, 1 sanity, and 1 health to nearby players every 10 seconds.
 - Abigail is permanently immune to lightning and fire damage.
+- Abigail haunting a dropped durability-based item fully restores its durability.
 
 This mod is designed to grow over time with broader Abigail-focused improvements.
 ]]
 author = "ra1nyxin"
-version = "0.1.3"
+version = "0.1.4"
 
 forumthread = ""
 api_version = 10

@@ -225,6 +225,85 @@ local function RestoreNearbyPlayers(inst)
     end
 end
 
+local function IsAbigailGroundItemHaunt(target, haunter)
+    return haunter ~= nil
+        and haunter.prefab == "abigail"
+        and target ~= nil
+        and target:IsValid()
+        and target.components.inventoryitem ~= nil
+        and target.components.inventoryitem:GetGrandOwner() == nil
+end
+
+local function RestoreItemDurability(target)
+    if target == nil or not target:IsValid() then
+        return false
+    end
+
+    local restored = false
+
+    if target.components.finiteuses ~= nil and target.components.finiteuses.total ~= nil then
+        local finiteuses = target.components.finiteuses
+        if finiteuses.total > 0
+            and finiteuses.current ~= nil
+            and finiteuses.current < finiteuses.total
+        then
+            finiteuses:SetUses(finiteuses.total)
+            restored = true
+        end
+    end
+
+    if target.components.armor ~= nil and target.components.armor.maxcondition ~= nil then
+        local armor = target.components.armor
+        if armor.maxcondition > 0
+            and armor.condition ~= nil
+            and armor.condition < armor.maxcondition
+        then
+            armor:SetCondition(armor.maxcondition)
+            restored = true
+        end
+    end
+
+    if target.components.fueled ~= nil and target.components.fueled.maxfuel ~= nil then
+        local fueled = target.components.fueled
+        if fueled.maxfuel > 0
+            and fueled.currentfuel ~= nil
+            and fueled.currentfuel < fueled.maxfuel
+        then
+            fueled:SetPercent(1)
+            restored = true
+        end
+    end
+
+    return restored
+end
+
+local function WrapHauntableForDurabilityRepair(inst)
+    if _G.TheWorld == nil
+        or not _G.TheWorld.ismastersim
+        or inst == nil
+        or not inst:IsValid()
+        or inst._dae_haunt_repair_wrapped == true
+        or inst.components.hauntable == nil
+    then
+        return
+    end
+
+    inst._dae_haunt_repair_wrapped = true
+
+    local hauntable = inst.components.hauntable
+    local original_onhaunt = hauntable.onhaunt
+    hauntable:SetOnHauntFn(function(target, haunter)
+        local restored = false
+        if IsAbigailGroundItemHaunt(target, haunter) then
+            restored = RestoreItemDurability(target)
+        end
+
+        local original_success = original_onhaunt ~= nil and original_onhaunt(target, haunter) or false
+
+        return restored or original_success
+    end)
+end
+
 AddPrefabPostInit("abigail", function(inst)
     if not _G.TheWorld.ismastersim then
         return
@@ -254,4 +333,8 @@ AddPrefabPostInit("abigail", function(inst)
     inst:ListenForEvent("onareaattackother", OnAbigailHitOther)
     inst:ListenForEvent("death", StopTargetLightning)
     inst:ListenForEvent("onremove", StopTargetLightning)
+end)
+
+AddPrefabPostInitAny(function(inst)
+    WrapHauntableForDurabilityRepair(inst)
 end)
