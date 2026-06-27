@@ -6,13 +6,13 @@ local LightningStrikeAttack = _G.LightningStrikeAttack
 local TheSim = _G.TheSim
 
 local SHOCK_INTERVAL = 2
-local LIGHT_RADIUS_MULT = 5
+local LIGHT_RADIUS_MULT = 7
 local LIGHT_REFRESH_INTERVAL = 1
 local ABIGAIL_SPEED_MULT = 1.5
 local TARGET_SLOW_MULT = 0.5
 local TARGET_SLOW_DURATION = 60
 local PLAYER_REGEN_INTERVAL = 60
-local PLAYER_REGEN_RADIUS = 6
+local PLAYER_REGEN_RADIUS = 10
 local PLAYER_REGEN_AMOUNT = 9
 local ABIGAIL_SPEED_KEY = "dst_abigail_enhanced_speed"
 local TARGET_SLOW_KEY = "dst_abigail_enhanced_slow"
@@ -271,6 +271,23 @@ local function RestoreItemDurability(target)
         then
             fueled:SetPercent(1)
             restored = true
+        end
+    end
+
+    if target.components.perishable ~= nil then
+        local perishable = target.components.perishable
+        if perishable.perishtime ~= nil
+            and perishable.perishtime > 0
+            and perishable.GetPercent ~= nil
+            and perishable.SetPercent ~= nil
+        then
+            local ok, percent = pcall(perishable.GetPercent, perishable)
+            if ok and percent ~= nil and percent < 1 then
+                local restored_freshness = pcall(perishable.SetPercent, perishable, 1)
+                if restored_freshness then
+                    restored = true
+                end
+            end
         end
     end
 
