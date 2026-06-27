@@ -278,16 +278,13 @@ local function RestoreItemDurability(target)
         local perishable = target.components.perishable
         if perishable.perishtime ~= nil
             and perishable.perishtime > 0
+            and perishable.perishremainingtime ~= nil
+            and perishable.perishremainingtime < perishable.perishtime
             and perishable.GetPercent ~= nil
             and perishable.SetPercent ~= nil
         then
-            local ok, percent = pcall(perishable.GetPercent, perishable)
-            if ok and percent ~= nil and percent < 1 then
-                local restored_freshness = pcall(perishable.SetPercent, perishable, 1)
-                if restored_freshness then
-                    restored = true
-                end
-            end
+            perishable:SetPercent(1)
+            restored = true
         end
     end
 
