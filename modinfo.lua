@@ -6,15 +6,16 @@ Current features:
 - Abigail calls down lightning on her current attack target immediately.
 - While that target stays alive and remains engaged, lightning strikes again every 2 seconds.
 - Abigail refreshes a 60 second 50% slow on targets whenever she hits them.
-- Abigail permanently moves 50% faster and has a 7x light radius.
+- Abigail permanently moves 100% faster and has a 7x light radius.
 - Abigail restores 9 hunger, 9 sanity, and 9 health to nearby players every 60 seconds.
+- Abigail freezes attackers with the base game's freeze effect when she is hit.
 - Abigail is permanently immune to lightning and fire damage.
 - Abigail haunting a dropped durability-based item restores durability and freshness where supported.
 
 This mod is designed to grow over time with broader Abigail-focused improvements.
 ]]
 author = "ra1nyxin"
-version = "0.1.7"
+version = "0.1.8"
 
 forumthread = ""
 api_version = 10

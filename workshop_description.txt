@@ -8,9 +8,10 @@ Enhances Wendy's Abigail with combat, utility, and survivability upgrades.
 - 阿比盖尔锁定攻击目标时会立刻先劈一道雷。
 - 只要目标还活着且仍然是阿比盖尔当前目标，就会每 2 秒继续电一次。
 - 阿比盖尔每次命中目标都会刷新一次 60 秒、50% 降移速效果。
-- 阿比盖尔永久获得 50% 移速提升。
+- 阿比盖尔永久获得 100% 移速提升。
 - 阿比盖尔发光范围提升到原版的 7 倍。
 - 每个阿比盖尔都会每 60 秒为附近玩家回复 9 点饱食度、9 点理智、9 点生命值。
+- 阿比盖尔受到伤害时，攻击她的怪会被原版冰冻效果冻住一段时间。
 - 阿比盖尔永久免疫雷击和火焰伤害。
 - 阿比盖尔对地面上的耐久类物品使用“作祟”命令时，会尽量回满耐久和保质期。
 
@@ -30,9 +31,10 @@ Current features:
 - Abigail calls down lightning on her current attack target immediately.
 - While that target stays alive and remains engaged, lightning strikes again every 2 seconds.
 - Whenever Abigail hits a target, she refreshes a 60 second 50% movement slow.
-- Abigail permanently gains 50% movement speed.
+- Abigail permanently gains 100% movement speed.
 - Abigail's light radius is increased to 7x the vanilla radius.
 - Every Abigail restores 9 hunger, 9 sanity, and 9 health to nearby players every 60 seconds.
+- Abigail freezes attackers with the base game's freeze effect when she is hit.
 - Abigail is permanently immune to lightning and fire damage.
 - When Abigail uses her haunt command on a dropped durability-based item, it restores durability and freshness where supported.
 

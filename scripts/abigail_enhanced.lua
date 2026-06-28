@@ -8,12 +8,13 @@ local TheSim = _G.TheSim
 local SHOCK_INTERVAL = 2
 local LIGHT_RADIUS_MULT = 7
 local LIGHT_REFRESH_INTERVAL = 1
-local ABIGAIL_SPEED_MULT = 1.5
+local ABIGAIL_SPEED_MULT = 2
 local TARGET_SLOW_MULT = 0.5
 local TARGET_SLOW_DURATION = 60
 local PLAYER_REGEN_INTERVAL = 60
 local PLAYER_REGEN_RADIUS = 10
 local PLAYER_REGEN_AMOUNT = 9
+local RETALIATION_FREEZE_COLDNESS = 1
 local ABIGAIL_SPEED_KEY = "dst_abigail_enhanced_speed"
 local TARGET_SLOW_KEY = "dst_abigail_enhanced_slow"
 local PLAYER_REGEN_MUST_TAGS = { "player" }
@@ -167,6 +168,30 @@ local function OnAbigailHitOther(inst, data)
     if target ~= nil then
         ApplyTargetSlow(target)
     end
+end
+
+local function FreezeAbigailAttacker(inst, data)
+    local attacker = data ~= nil and data.attacker or nil
+    if attacker == nil
+        or attacker == inst
+        or not attacker:IsValid()
+        or attacker:IsInLimbo()
+        or attacker:HasTag("player")
+        or attacker.components.health == nil
+        or attacker.components.health:IsDead()
+        or attacker.components.freezable == nil
+    then
+        return
+    end
+
+    local freezable = attacker.components.freezable
+    local coldness = RETALIATION_FREEZE_COLDNESS
+    if freezable.ResolveResistance ~= nil then
+        coldness = math.max(coldness, freezable:ResolveResistance())
+    end
+
+    freezable:AddColdness(coldness)
+    freezable:SpawnShatterFX()
 end
 
 local function ApplyAbigailSpeedBoost(inst)
@@ -345,6 +370,7 @@ AddPrefabPostInit("abigail", function(inst)
     inst:ListenForEvent("droppedtarget", OnDroppedTarget)
     inst:ListenForEvent("onhitother", OnAbigailHitOther)
     inst:ListenForEvent("onareaattackother", OnAbigailHitOther)
+    inst:ListenForEvent("attacked", FreezeAbigailAttacker)
     inst:ListenForEvent("death", StopTargetLightning)
     inst:ListenForEvent("onremove", StopTargetLightning)
 end)
